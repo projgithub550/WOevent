@@ -3,6 +3,8 @@ package com.lantu.woevent.controller;
 import com.lantu.woevent.models.News;
 import com.lantu.woevent.models.ResultInfo;
 import com.lantu.woevent.service.INewsService;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -30,11 +32,11 @@ public class NewsController
     @GetMapping("/form")
     public String toNews()
     {
-        //System.out.println("sss");
+        System.out.println("sss");
         return "news_page";
     }
 
-    @GetMapping("/news")
+    @GetMapping("/adrd/news")
     public ResponseEntity<ResultInfo<News>> getNews(@RequestParam(value = "date",required = false) String date)
     {
         ResultInfo<News> ri= new ResultInfo<>();
@@ -69,6 +71,8 @@ public class NewsController
     }
 
 
+    @RequiresRoles({"admin"})
+    @RequiresPermissions({"read"})
     @GetMapping("/news/list")
     public ResponseEntity<ResultInfo<List<News>>> showAllNews()
     {
@@ -81,6 +85,8 @@ public class NewsController
         return new ResponseEntity<ResultInfo<List<News>>>(ri,HttpStatus.OK);
     }
 
+    @RequiresRoles({"admin"})
+    @RequiresPermissions(("download"))
     @GetMapping("/news/{news_date}")
     public void downloadNews(@PathVariable(value = "news_date") String date, HttpServletResponse response)
     {
@@ -106,6 +112,9 @@ public class NewsController
         }
     }
 
+
+    @RequiresRoles({"admin"})
+    @RequiresPermissions({"create"})
     @PostMapping("/news")
     public ResponseEntity<ResultInfo<News>> addNews(@RequestParam(value = "date",required = false) String date,
                                                     @RequestParam(value = "title",required = false) String title,
@@ -159,6 +168,8 @@ public class NewsController
         return new ResponseEntity<ResultInfo<News>>(ri,status);
     }
 
+    @RequiresRoles({"admin"})
+    @RequiresPermissions({"delete"})
     @DeleteMapping("/news/{news_date}")
     public ResponseEntity<ResultInfo<News>> removeNews(@PathVariable(value = "news_date",
                                                 required = false) String date)
@@ -193,6 +204,8 @@ public class NewsController
         return new ResponseEntity<ResultInfo<News>>(ri,status);
     }
 
+    @RequiresRoles({"admin"})
+    @RequiresPermissions({"update"})
     @PutMapping("/news/{news_date}")
     public ResponseEntity<ResultInfo<News>> updateNews(@PathVariable(value = "news_date",required = false) String date,
                                                        @RequestParam(value = "title",required = false)String title,

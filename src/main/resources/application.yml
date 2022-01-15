@@ -1,5 +1,7 @@
 server:
-  port: 4589
+  port: 80
+
+
 spring:
   datasource:
     username: root
@@ -11,3 +13,16 @@ spring:
     multipart:
       max-file-size: 25MB
       max-request-size: 25MB
+
+
+
+mybatis:
+  table:
+    auto: update
+  model:
+    pack: com.lantu.woevent.models
+  database:
+    type: mysql
+
+mybatis-plus:
+  mapper-locations: classpath*:com/gitee/sunchenbin/mybatis/actable/mapping/*/*.xml

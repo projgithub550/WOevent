@@ -20,6 +20,13 @@ public class NewsService implements INewsService
     @Autowired
     private INewsMapper mapper;
 
+//
+//    public NewsService(INewsMapper _mapper)
+//    {
+//
+//    }
+
+
     @Override
     public News findNewsByDate(String date)
     {
