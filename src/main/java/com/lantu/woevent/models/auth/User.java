@@ -10,6 +10,7 @@ import com.gitee.sunchenbin.mybatis.actable.annotation.IsKey;
 import com.gitee.sunchenbin.mybatis.actable.annotation.Table;
 import lombok.Data;
 
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -17,10 +18,8 @@ import java.util.Set;
 public class User
 {
     @TableId
-    @IsKey
-    @IsAutoIncrement
-    @Column(name = "u_id")
-    private int id;
+    @Column(isKey = true,isAutoIncrement = true,name = "u_id")
+    private int uId;
 
     @Column(type = "varchar",length = 60,isNull = false)
     private String username;
@@ -29,5 +28,5 @@ public class User
     private String password;
 
     @TableField(exist = false)
-    private Set<Role> roles;
+    private List<Role> roles;
 }

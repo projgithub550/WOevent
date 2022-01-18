@@ -3,6 +3,7 @@ package com.lantu.woevent.controller;
 import com.lantu.woevent.models.News;
 import com.lantu.woevent.models.ResultInfo;
 import com.lantu.woevent.service.INewsService;
+import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,19 +38,11 @@ public class NewsController
     }
 
     @GetMapping("/adrd/news")
-    public ResponseEntity<ResultInfo<News>> getNews(@RequestParam(value = "date",required = false) String date)
+    public ResponseEntity<ResultInfo<News>> getNews()
     {
         ResultInfo<News> ri= new ResultInfo<>();
-        //判断参数是否有效
-        if (date == null || "".equals(date))
-        {
-            ri.setEntity(null);
-            ri.setMessage("请给出新闻日期");
-            ri.setSuccess(false);
-           return new ResponseEntity<ResultInfo<News>>(ri, HttpStatus.BAD_REQUEST);
-        }
 
-        News news = service.findNewsByDate(date);
+        News news = service.findNewsForAndroid();
 
         //如果查到，返回成功的结果
         if (news != null)
@@ -71,9 +64,9 @@ public class NewsController
     }
 
 
-    @RequiresRoles({"admin"})
-    @RequiresPermissions({"read"})
+
     @GetMapping("/news/list")
+    @RequiresRoles(value = {"admin","user"},logical = Logical.OR)
     public ResponseEntity<ResultInfo<List<News>>> showAllNews()
     {
         ResultInfo<List<News>> ri = new ResultInfo<>();
@@ -85,8 +78,42 @@ public class NewsController
         return new ResponseEntity<ResultInfo<List<News>>>(ri,HttpStatus.OK);
     }
 
-    @RequiresRoles({"admin"})
-    @RequiresPermissions(("download"))
+    @GetMapping("/news/for_adrd")
+    @RequiresRoles("admin")
+    @RequiresPermissions("set")
+    public ResponseEntity<ResultInfo<News>> setNewsForAndriod(@RequestParam(value = "date",required = false) String date)
+    {
+        ResultInfo<News> ri = new ResultInfo<>();
+        //判断参数是否有效
+        if (date == null || "".equals(date))
+        {
+            ri.setEntity(null);
+            ri.setMessage("请给出新闻日期");
+            ri.setSuccess(false);
+            return new ResponseEntity<ResultInfo<News>>(ri, HttpStatus.BAD_REQUEST);
+        }
+
+        boolean success = service.setNewsForAndroid(date);
+        HttpStatus status;
+        if (success)
+        {
+            ri.setEntity(null);
+            ri.setMessage("设置成功");
+            ri.setSuccess(true);
+            status = HttpStatus.OK;
+        }
+        else
+        {
+            ri.setEntity(null);
+            ri.setMessage("新闻不存在，设置失败");
+            ri.setSuccess(false);
+            status = HttpStatus.BAD_REQUEST;
+        }
+
+        return new ResponseEntity<ResultInfo<News>>(ri,status);
+    }
+
+    @RequiresRoles({"admin","user"})
     @GetMapping("/news/{news_date}")
     public void downloadNews(@PathVariable(value = "news_date") String date, HttpServletResponse response)
     {
@@ -114,7 +141,6 @@ public class NewsController
 
 
     @RequiresRoles({"admin"})
-    @RequiresPermissions({"create"})
     @PostMapping("/news")
     public ResponseEntity<ResultInfo<News>> addNews(@RequestParam(value = "date",required = false) String date,
                                                     @RequestParam(value = "title",required = false) String title,
@@ -169,7 +195,6 @@ public class NewsController
     }
 
     @RequiresRoles({"admin"})
-    @RequiresPermissions({"delete"})
     @DeleteMapping("/news/{news_date}")
     public ResponseEntity<ResultInfo<News>> removeNews(@PathVariable(value = "news_date",
                                                 required = false) String date)
@@ -205,7 +230,6 @@ public class NewsController
     }
 
     @RequiresRoles({"admin"})
-    @RequiresPermissions({"update"})
     @PutMapping("/news/{news_date}")
     public ResponseEntity<ResultInfo<News>> updateNews(@PathVariable(value = "news_date",required = false) String date,
                                                        @RequestParam(value = "title",required = false)String title,

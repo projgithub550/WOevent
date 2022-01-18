@@ -91,11 +91,65 @@ public class NewsService implements INewsService
         return false;
     }
 
+    @Override
+    public boolean setNewsForAndroid(String date)
+    {
+        if (!isExist(date))
+        {
+            return false;
+        }
+
+
+        UpdateWrapper<News> wrapper = new UpdateWrapper<>();
+        News news = getOldNewsForAndroid();
+
+        //删除之前设置的安卓新闻
+        if (news != null)
+        {
+            wrapper.eq("news_date",news.getNewsDate()).set("is_for_android",0);
+            mapper.update(new News(),wrapper);
+        }
+
+        //设置新的安卓新闻
+        wrapper.clear();
+        wrapper.eq("news_date",date);
+        wrapper.set("is_for_android",1);
+        mapper.update(new News(),wrapper);
+
+        return true;
+
+    }
+
     private boolean isExist(String date)
     {
         QueryWrapper<News> wrapper = new QueryWrapper<>();
         wrapper.exists("select news_date from news where news_date = \"" + date + "\"");
 
         return mapper.exists(wrapper);
+    }
+
+    @Override
+    public News findNewsForAndroid()
+    {
+        News news = getOldNewsForAndroid();
+
+        //如果还没有设置，则返回最后一条新闻
+        if (news == null)
+        {
+            Long count = mapper.selectCount(new QueryWrapper<News>());
+            count -- ;
+            QueryWrapper<News> wrapper = new QueryWrapper<>();
+            wrapper.last("limit " + count + ",1" );
+            return mapper.selectOne(wrapper);
+        }
+
+        return news;
+    }
+
+    private News getOldNewsForAndroid()
+    {
+        QueryWrapper<News> wrapper = new QueryWrapper<>();
+        wrapper.eq("is_for_android",1);
+        return mapper.selectOne(wrapper);
     }
 }

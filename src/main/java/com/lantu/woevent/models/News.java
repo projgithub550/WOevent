@@ -20,4 +20,7 @@ public class News
 
     @Column(isNull = false,type = "longblob")
     private byte[] content;
+
+    @Column(type = "tinyint",isNull = false,name = "is_for_android")
+    private boolean isForAndroid;
 }

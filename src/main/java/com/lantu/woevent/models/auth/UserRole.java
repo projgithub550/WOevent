@@ -8,9 +8,9 @@ import lombok.Data;
 @Table(name = "user_role")
 public class UserRole
 {
-    @Column(name="user_id",isNull = false)
+    @Column(isNull = false,name = "user_id")
     private int userId;
 
-    @Column(name="role_id",isNull = false)
+    @Column(isNull = false,name = "role_id")
     private int roleId;
 }

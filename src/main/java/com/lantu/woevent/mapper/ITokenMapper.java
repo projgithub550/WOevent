@@ -5,4 +5,5 @@ import com.lantu.woevent.models.auth.SysToken;
 
 public interface ITokenMapper extends BaseMapper<SysToken>
 {
+
 }

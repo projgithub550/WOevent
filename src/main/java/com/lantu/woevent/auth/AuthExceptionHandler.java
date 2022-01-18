@@ -54,7 +54,7 @@ public class AuthExceptionHandler
             error = "对不起，您的权限有误";
         }
 
-        ri.setMessage("用户不存在");
+        ri.setMessage(error);
         return new ResponseEntity<>(ri,HttpStatus.BAD_REQUEST);
     }
 

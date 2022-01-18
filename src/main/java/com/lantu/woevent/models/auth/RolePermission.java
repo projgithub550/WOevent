@@ -9,9 +9,9 @@ import lombok.Data;
 @Table(name = "role_permission")
 public class RolePermission
 {
-    @Column(name = "role_id",isNull = false)
+    @Column(isNull = false,name = "role_id")
     private int roleId;
 
-    @Column(name = "permission_id",isNull = false)
+    @Column(isNull = false,name = "permission_id")
     private int permissionId;
 }

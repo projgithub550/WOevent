@@ -15,6 +15,7 @@ import org.apache.shiro.subject.PrincipalCollection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Set;
 
 @Component
@@ -34,12 +35,12 @@ public class MyRealm extends AuthorizingRealm
         SimpleAuthorizationInfo info  = new SimpleAuthorizationInfo();
 
         //获取用户的角色和权限
-
-        Set<Role> roles = user.getRoles();
+        List<Role> roles = service_u.findRolesByUserId(user.getUId());
+        user.setRoles(roles);
         for (Role role:roles)
         {
             info.addRole(role.getRoleName());
-            Set<Permission> permissions = role.getPermissions();
+            List<Permission> permissions = service_u.findPermissionsByRoleId(role.getRId());
             for (Permission permission: permissions)
             {
                 info.addStringPermission(permission.getPermissionName());
@@ -73,6 +74,6 @@ public class MyRealm extends AuthorizingRealm
 
         SimpleAuthenticationInfo authenticationInfo = new SimpleAuthenticationInfo(user,uToken,this.getName());
 
-        return null;
+        return authenticationInfo;
     }
 }

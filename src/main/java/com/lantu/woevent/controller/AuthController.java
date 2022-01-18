@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -23,9 +24,14 @@ public class AuthController
     @Autowired
     private IAuthService aService;
 
+    @GetMapping("/l_form")
+    public String toLogin()
+    {
+        return "login";
+    }
 
     @PostMapping("/login")
-    public ResponseEntity<ResultInfo<String>> login(@RequestBody @Validated LoginDTO loginDTO,
+    public ResponseEntity<ResultInfo<String>> login(@Validated LoginDTO loginDTO,
                                               BindingResult bindingResult)
     {
         //进行错误处理
@@ -57,7 +63,7 @@ public class AuthController
             //登录成功则返回一个token
             ri.setSuccess(true);
             ri.setMessage("登录成功");
-            String token = aService.createToken(user.getId());
+            String token = aService.createToken(user.getUId());
             ri.setEntity(token);
             status = HttpStatus.OK;
         }

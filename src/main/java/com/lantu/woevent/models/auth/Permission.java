@@ -12,11 +12,9 @@ import lombok.ToString;
 @Table(name = "permission")
 public class Permission
 {
-    @IsKey
-    @IsAutoIncrement
-    @Column(name = "p_id")
+    @Column(isNull = false,isKey = true,isAutoIncrement = true,name = "p_id")
     private int pId;
 
-    @Column(name = "permission_name",type = "varchar",length = 50,isNull = false)
+    @Column(type = "varchar",length = 50,isNull = false,name = "permission_name")
     private String permissionName;
 }

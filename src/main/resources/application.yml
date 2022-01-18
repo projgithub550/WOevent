@@ -20,7 +20,7 @@ mybatis:
   table:
     auto: update
   model:
-    pack: com.lantu.woevent.models
+    pack: com.lantu.woevent.models,com.lantu.woevent.models.auth
   database:
     type: mysql
 

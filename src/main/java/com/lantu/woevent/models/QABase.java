@@ -8,12 +8,12 @@ import com.gitee.sunchenbin.mybatis.actable.annotation.Table;
 import lombok.Data;
 
 @Data
-@Table(name = "qaBase")
+@Table(name = "qa_base")
 public class QABase
 {
     @IsKey
     @Column(isAutoIncrement = true,name = "q_id")
-    private int id;
+    private int qId;
 
     @Column(isNull = false,length = 70,type = "varchar")
     private String question;

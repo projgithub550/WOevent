@@ -15,4 +15,8 @@ public interface INewsService
     public boolean deleteNews(String date);
 
     public boolean updateNews(News news);
+
+    public boolean setNewsForAndroid(String date);
+
+    public News findNewsForAndroid();
 }

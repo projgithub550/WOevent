@@ -6,10 +6,10 @@ import com.gitee.sunchenbin.mybatis.actable.annotation.Table;
 import lombok.Data;
 
 @Data
-@Table(name = "token")
+@Table(name = "sys_token")
 public class SysToken
 {
-    @Column(name = "user_id",isNull = false)
+    @Column(isNull = false,name = "user_id")
     private int userId;
 
     @IsKey
