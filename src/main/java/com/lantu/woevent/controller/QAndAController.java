@@ -86,7 +86,7 @@ public class QAndAController {
 
     @PostMapping(value="/add")
     public ResponseEntity<ResultInfo<QAndA>> addQAndA(@RequestParam(value = "question") String question,
-                                                      @RequestParam(value = "question") String answer){
+                                                      @RequestParam(value = "answer") String answer){
 
 
 
