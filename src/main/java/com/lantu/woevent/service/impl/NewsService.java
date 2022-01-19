@@ -138,6 +138,10 @@ public class NewsService implements INewsService
         {
             Long count = mapper.selectCount(new QueryWrapper<News>());
             count -- ;
+            if (count == -1)
+            {
+                return null;
+            }
             QueryWrapper<News> wrapper = new QueryWrapper<>();
             wrapper.last("limit " + count + ",1" );
             return mapper.selectOne(wrapper);

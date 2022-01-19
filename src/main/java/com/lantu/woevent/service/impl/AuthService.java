@@ -21,18 +21,17 @@ public class AuthService implements IAuthService
     @Override
     public String createToken(int userId)
     {
-        SysToken token = new SysToken();
-
-        String tok = findTokenByUserId(userId);
-        if (tok == null || "".equals(tok))
+        SysToken tok = findTokenByUserId(userId);
+        if (tok == null)
         {
+            SysToken token = new SysToken();
             token.setUserId(userId);
             token.setToken(TokenUtils.generateToken());
             mapper.insert(token);
-            tok = token.getToken();
+            tok = token;
         }
 
-        return tok;
+        return tok.getToken();
     }
 
     @Override
@@ -46,11 +45,11 @@ public class AuthService implements IAuthService
     }
 
     @Override
-    public String findTokenByUserId(int id)
+    public SysToken findTokenByUserId(int id)
     {
         QueryWrapper<SysToken> wrapper = new QueryWrapper<>();
         wrapper.eq("user_id",id).select("token").last("limit 0,1");
-        String token = mapper.selectOne(wrapper).getToken();
+        SysToken token = mapper.selectOne(wrapper);
         return token;
     }
 }

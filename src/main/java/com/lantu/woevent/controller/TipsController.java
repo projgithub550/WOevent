@@ -1,8 +1,12 @@
 package com.lantu.woevent.controller;
 
+import com.lantu.woevent.models.News;
 import com.lantu.woevent.models.ResultInfo;
 import com.lantu.woevent.models.Tips;
 import com.lantu.woevent.service.ITipsService;
+import org.apache.shiro.authz.annotation.Logical;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,28 +27,21 @@ public class TipsController
 {
     @Autowired
     private ITipsService service;
-    /*
-    @GetMapping("/form")
-    public String toNews()
+
+    @GetMapping("/tip_form")
+    public String toTips()
     {
         //System.out.println("sss");
-        return "news_page";
-    }*/
+        return "tip_page";
+    }
 
-    @GetMapping("/tips")
-    public ResponseEntity<ResultInfo<Tips>> getTip(@RequestParam(value = "id",required = false) Integer id)
+
+    @GetMapping("/adrd/tips")
+    public ResponseEntity<ResultInfo<Tips>> getTip()
     {
         ResultInfo<Tips> ri= new ResultInfo<Tips>();
-        //判断参数是否有效
-        if (id == null)
-        {
-            ri.setEntity(null);
-            ri.setMessage("请给出科普知识ID");
-            ri.setSuccess(false);
-           return new ResponseEntity<ResultInfo<Tips>>(ri, HttpStatus.BAD_REQUEST);
-        }
 
-        Tips tip = service.findTipByID(id);
+        Tips tip = service.findTipForAndroid();
 
         //如果查到，返回成功的结果
         if (tip != null)
@@ -63,7 +60,7 @@ public class TipsController
         }
     }
 
-
+    @RequiresRoles(value = {"admin","user"},logical = Logical.OR)
     @GetMapping("/tips/list")
     public ResponseEntity<ResultInfo<List<Tips>>> showAllTips()
     {
@@ -76,6 +73,42 @@ public class TipsController
         return new ResponseEntity<ResultInfo<List<Tips>>>(ri,HttpStatus.OK);
     }
 
+    @GetMapping("/tips/for_adrd")
+    @RequiresRoles("admin")
+    @RequiresPermissions("set")
+    public ResponseEntity<ResultInfo<Tips>> setTipForAndroid(@RequestParam(value = "id",required = false) Integer id)
+    {
+        ResultInfo<Tips> ri = new ResultInfo<>();
+        //判断参数是否有效
+        if (id == null)
+        {
+            ri.setEntity(null);
+            ri.setMessage("请给出科普知识ID");
+            ri.setSuccess(false);
+            return new ResponseEntity<ResultInfo<Tips>>(ri, HttpStatus.BAD_REQUEST);
+        }
+
+        boolean success = service.setTipForAndroid(id);
+        HttpStatus status;
+        if (success)
+        {
+            ri.setEntity(null);
+            ri.setMessage("设置成功");
+            ri.setSuccess(true);
+            status = HttpStatus.OK;
+        }
+        else
+        {
+            ri.setEntity(null);
+            ri.setMessage("科普不存在，设置失败");
+            ri.setSuccess(false);
+            status = HttpStatus.BAD_REQUEST;
+        }
+
+        return new ResponseEntity<ResultInfo<Tips>>(ri,status);
+    }
+
+    @RequiresRoles(value = {"admin","user"},logical = Logical.OR)
     @GetMapping("/tips/{id}")
     public void downloadTip(@PathVariable(value = "id") Integer id, HttpServletResponse response)
     {
@@ -100,16 +133,15 @@ public class TipsController
         }
     }
 
+    @RequiresRoles("admin")
     @PostMapping("/tips")
-    public ResponseEntity<ResultInfo<Tips>> addTip(@RequestParam(value = "id",required = false) Integer id,
-                                                    @RequestParam(value = "title",required = false) String title,
-                                                    @RequestParam(value = "tips_file",required = false)MultipartFile file)
+    public ResponseEntity<ResultInfo<Tips>> addTip(@RequestParam(value = "title",required = false) String title,
+                                                    @RequestParam(value = "tips_file",required = false) MultipartFile file)
     {
         ResultInfo<Tips> ri = new ResultInfo<Tips>();
 
         //判断参数有效性
-        if (id == null
-        || title == null || "".equals(title)
+        if (title == null || "".equals(title)
         || file == null || file.isEmpty())
         {
             ri.setEntity(null);
@@ -119,7 +151,6 @@ public class TipsController
         }
 
         Tips tip = new Tips();
-        tip.setId(id);
         tip.setTitle(title);
 
         //将文件转为字节流
@@ -133,25 +164,18 @@ public class TipsController
         else
         {
             tip.setContent(data);
-            boolean success = service.addTip(tip);
+            service.addTip(tip);
 
             //如果要添加的科普知识先前不存在，则添加成功，返回成功结果
             ri.setEntity(null);
-            if (success)
-            {
-                ri.setSuccess(true);
-                ri.setMessage("添加科普知识成功");
-                status = HttpStatus.OK;
-            }
-            else {
-                ri.setSuccess(false);
-                ri.setMessage("该ID下的科普知识已经存在，添加失败");
-                status = HttpStatus.BAD_REQUEST;
-            }
+            ri.setSuccess(true);
+            ri.setMessage("添加科普知识成功");
+            status = HttpStatus.OK;
         }
         return new ResponseEntity<ResultInfo<Tips>>(ri,status);
     }
 
+    @RequiresRoles("admin")
     @DeleteMapping("/tips/{id}")
     public ResponseEntity<ResultInfo<Tips>> removeTip(@PathVariable(value = "id",
                                                 required = false) Integer id)
@@ -186,6 +210,7 @@ public class TipsController
         return new ResponseEntity<ResultInfo<Tips>>(ri,status);
     }
 
+    @RequiresRoles("admin")
     @PutMapping("/tips/{id}")
     public ResponseEntity<ResultInfo<Tips>> updateTip(@PathVariable(value = "id",required = false) Integer id,
                                                        @RequestParam(value = "title",required = false) String title,
@@ -217,7 +242,7 @@ public class TipsController
         }
 
         Tips tip = new Tips();
-        tip.setId(id);
+        tip.setTId(id);
         tip.setContent(data);
         tip.setTitle(title);
 
@@ -241,7 +266,7 @@ public class TipsController
 
     private byte[] toByte(MultipartFile file)
     {
-        InputStream ins = null;
+        InputStream ins;
         try {
             //将文件以字节流形式写入变量data,借助buffer缓存
             ins = file.getInputStream();

@@ -51,9 +51,9 @@ public class ShiroConfig
         //如果是登录或是安卓端申请资源，则直接放行
         filterChain.put("/login","anon");
         filterChain.put("/adrd/**","anon");
-        //filterChain.put("/form","anon");
+        //filterChain.put("/tip_form","anon");
         //filterChain.put("/l_form","anon");
-        //filterChain.put("/news","anon");
+        //filterChain.put("/tips","anon");
 
         //其余的请求全部要验证
         filterChain.put("/**","auth");
