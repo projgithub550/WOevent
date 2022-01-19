@@ -24,7 +24,7 @@ public class AuthService implements IAuthService
         SysToken token = new SysToken();
 
         String tok = findTokenByUserId(userId);
-        if (tok == null || "".isEmpty())
+        if (tok == null || "".equals(tok))
         {
             token.setUserId(userId);
             token.setToken(TokenUtils.generateToken());
@@ -49,7 +49,7 @@ public class AuthService implements IAuthService
     public String findTokenByUserId(int id)
     {
         QueryWrapper<SysToken> wrapper = new QueryWrapper<>();
-        wrapper.eq("user_id",id).select("token");
+        wrapper.eq("user_id",id).select("token").last("limit 0,1");
         String token = mapper.selectOne(wrapper).getToken();
         return token;
     }
