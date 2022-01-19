@@ -11,6 +11,6 @@ public interface IAuthService
 
     public SysToken findTokenByName(String token);
 
-    public String findTokenByUserId(int id);
+    public SysToken findTokenByUserId(int id);
 
 }

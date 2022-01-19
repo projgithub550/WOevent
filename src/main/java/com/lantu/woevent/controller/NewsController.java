@@ -81,7 +81,7 @@ public class NewsController
     @GetMapping("/news/for_adrd")
     @RequiresRoles("admin")
     @RequiresPermissions("set")
-    public ResponseEntity<ResultInfo<News>> setNewsForAndriod(@RequestParam(value = "date",required = false) String date)
+    public ResponseEntity<ResultInfo<News>> setNewsForAndroid(@RequestParam(value = "date",required = false) String date)
     {
         ResultInfo<News> ri = new ResultInfo<>();
         //判断参数是否有效
@@ -113,7 +113,7 @@ public class NewsController
         return new ResponseEntity<ResultInfo<News>>(ri,status);
     }
 
-    @RequiresRoles({"admin","user"})
+    @RequiresRoles(value = {"admin","user"},logical = Logical.OR)
     @GetMapping("/news/{news_date}")
     public void downloadNews(@PathVariable(value = "news_date") String date, HttpServletResponse response)
     {
