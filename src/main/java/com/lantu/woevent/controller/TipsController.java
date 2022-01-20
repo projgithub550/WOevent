@@ -68,6 +68,7 @@ public class TipsController
         ri.setSuccess(true);
 
         List<Tips> list = service.findAllTips();
+        System.out.println(list);
         ri.setEntity(list);
         ri.setMessage("科普知识总数为：" + list.size());
         return new ResponseEntity<ResultInfo<List<Tips>>>(ri,HttpStatus.OK);
@@ -166,7 +167,6 @@ public class TipsController
             tip.setContent(data);
             service.addTip(tip);
 
-            //如果要添加的科普知识先前不存在，则添加成功，返回成功结果
             ri.setEntity(null);
             ri.setSuccess(true);
             ri.setMessage("添加科普知识成功");
