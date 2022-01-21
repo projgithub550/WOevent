@@ -21,6 +21,6 @@ public class QABase
     @Column(isNull = false,length = 70,type = "varchar")
     private String question;
 
-    @Column(isNull = false,length = 100,type = "varchar")
+    @Column(isNull = false,length = 500,type = "varchar")
     private String answer;
 }

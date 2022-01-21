@@ -48,7 +48,7 @@ public class TipsService implements ITipsService {
 
     public List<Tips> findAllTips() {
         QueryWrapper<Tips> wrapper = new QueryWrapper<>();
-        wrapper.select("t_id", "title");
+        wrapper.select("t_id", "title","is_for_android");
         List<Tips> list = mapper.selectList(wrapper);
         return list;
     }
